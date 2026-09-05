@@ -1,0 +1,1619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>LEGAND HUSE DEV · OTP Console</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet" />
+  <style>
+    /* ── RESET & VARIABLES ── */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --bg-primary: #0a0e17;
+      --bg-secondary: #111927;
+      --bg-card: #141e2b;
+      --border-color: #1e2d3f;
+      --text-primary: #f0f4fa;
+      --text-secondary: #8899b4;
+      --text-muted: #4a5a72;
+      --accent-blue: #3b82f6;
+      --accent-cyan: #22d3ee;
+      --accent-green: #34d399;
+      --accent-red: #f87171;
+      --accent-orange: #fb923c;
+      --accent-purple: #8b5cf6;
+      --shadow-card: 0 8px 32px rgba(0,0,0,0.5);
+      --radius-card: 16px;
+      --radius-sm: 10px;
+      --radius-full: 50px;
+      --transition: all 0.25s cubic-bezier(0.22,1,0.36,1);
+    }
+    html, body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 100vh;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: var(--bg-secondary); }
+    ::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 10px; }
+
+    #app {
+      max-width: 480px;
+      margin: 0 auto;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #0a0e17 0%, #111927 100%);
+      display: flex;
+      flex-direction: column;
+      padding: 16px 16px 80px 16px;
+    }
+
+    /* ── AUTH SCREEN ── */
+    #authScreen {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-height: 90vh;
+      padding: 20px 0;
+    }
+    .brand { text-align: center; margin-bottom: 32px; }
+    .brand .logo-img {
+      width: 72px; height: 72px;
+      border-radius: 20px;
+      object-fit: cover;
+      border: 2px solid rgba(255,255,255,0.06);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+      margin-bottom: 10px;
+    }
+    .brand h1 { font-size: 26px; font-weight: 800; color: #fff; }
+    .brand h1 span {
+      background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .brand p { color: var(--text-secondary); font-size: 14px; margin-top: 2px; }
+
+    .auth-box {
+      background: var(--bg-card);
+      border-radius: var(--radius-card);
+      padding: 28px 22px;
+      border: 1px solid var(--border-color);
+      box-shadow: var(--shadow-card);
+    }
+    .auth-box .form-group { margin-bottom: 16px; }
+    .auth-box .form-group label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 5px;
+    }
+    .auth-box .form-group input,
+    .auth-box .form-group select {
+      width: 100%;
+      padding: 12px 16px;
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      color: var(--text-primary);
+      font-size: 15px;
+      transition: var(--transition);
+      outline: none;
+      font-family: 'Inter', sans-serif;
+      appearance: none;
+    }
+    .auth-box .form-group select { cursor: pointer; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%238899b4' d='M6 8L1 3h10z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 16px center; padding-right: 40px; }
+    .auth-box .form-group input:focus,
+    .auth-box .form-group select:focus { border-color: var(--accent-blue); box-shadow: 0 0 0 3px rgba(59,130,246,0.15); }
+    .auth-box .form-group input::placeholder { color: var(--text-muted); }
+    .auth-box .form-group .phone-wrapper { display: flex; gap: 8px; }
+    .auth-box .form-group .phone-wrapper select { width: 100px; flex-shrink: 0; padding: 12px 12px; background-position: right 10px center; }
+    .auth-box .form-group .phone-wrapper input { flex: 1; }
+
+    .auth-box .btn-auth {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: var(--transition);
+      background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+      color: #fff;
+      box-shadow: 0 4px 20px rgba(59,130,246,0.25);
+      font-family: 'Inter', sans-serif;
+    }
+    .auth-box .btn-auth:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(59,130,246,0.35); }
+    .auth-box .btn-auth:active { transform: scale(0.97); }
+    .auth-box .toggle-link {
+      text-align: center;
+      margin-top: 16px;
+      font-size: 14px;
+      color: var(--text-secondary);
+    }
+    .auth-box .toggle-link span { color: var(--accent-cyan); font-weight: 600; cursor: pointer; transition: var(--transition); }
+    .auth-box .toggle-link span:hover { color: #fff; }
+    .auth-box .auth-msg {
+      padding: 10px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 500;
+      margin-bottom: 14px;
+      display: none;
+    }
+    .auth-box .auth-msg.error { display: block; background: rgba(248,113,113,0.10); border: 1px solid rgba(248,113,113,0.20); color: var(--accent-red); }
+    .auth-box .auth-msg.success { display: block; background: rgba(52,211,153,0.08); border: 1px solid rgba(52,211,153,0.15); color: var(--accent-green); }
+
+    .support-btn-wrap { text-align: center; margin-top: 18px; }
+    .support-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 28px;
+      background: linear-gradient(135deg, #25D366, #128C7E);
+      color: #fff;
+      font-weight: 700;
+      font-size: 14px;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      box-shadow: 0 8px 28px rgba(37,211,102,0.25);
+      transition: var(--transition);
+      position: relative;
+      overflow: hidden;
+      letter-spacing: 0.3px;
+      font-family: 'Inter', sans-serif;
+      text-decoration: none;
+    }
+    .support-btn::before {
+      content: '';
+      position: absolute;
+      inset: -2px;
+      border-radius: 50px;
+      background: linear-gradient(135deg, #25D366, #55efc4, #25D366);
+      background-size: 300% 300%;
+      z-index: -1;
+      animation: btnGlow 3s ease-in-out infinite;
+      opacity: 0.5;
+      filter: blur(8px);
+    }
+    @keyframes btnGlow { 0%,100% { background-position: 0% 50%; opacity: 0.4; } 50% { background-position: 100% 50%; opacity: 0.8; } }
+    .support-btn:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 14px 40px rgba(37,211,102,0.4); }
+    .support-btn:active { transform: scale(0.96); }
+    .support-btn::after {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle at 30% 40%, rgba(255,255,255,0.08), transparent 60%);
+      pointer-events: none;
+      animation: shimmer 4s ease-in-out infinite;
+    }
+    @keyframes shimmer { 0%,100% { transform: translate(-10%, -10%) scale(1); opacity: 0.3; } 50% { transform: translate(10%, 10%) scale(1.2); opacity: 0.7; } }
+
+    /* ── DASHBOARD ── */
+    #dashboard {
+      display: none;
+      flex-direction: column;
+      gap: 16px;
+      animation: fadeUp 0.4s ease;
+    }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+    .dash-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 0 12px 0;
+      border-bottom: 1px solid var(--border-color);
+    }
+    .dash-header .left { display: flex; align-items: center; gap: 12px; position: relative; }
+    .dash-header .left .menu-dots {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-full);
+      padding: 6px 12px;
+      color: var(--text-secondary);
+      font-size: 18px;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .dash-header .left .menu-dots:hover { background: var(--bg-card-hover); color: #fff; }
+    .dash-header .left .greeting { display: flex; flex-direction: column; }
+    .dash-header .left .greeting .greet-label { font-size: 11px; color: var(--text-secondary); font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; }
+    .dash-header .left .greeting .user-name { font-size: 18px; font-weight: 700; color: #fff; line-height: 1.2; }
+    .dash-header .left .greeting .user-name i { color: var(--accent-orange); font-size: 14px; margin-left: 4px; }
+    .dash-header .logout-btn { background: none; border: none; color: var(--text-muted); font-size: 20px; cursor: pointer; transition: var(--transition); padding: 6px; }
+    .dash-header .logout-btn:hover { color: var(--accent-red); }
+
+    .dropdown-menu {
+      position: absolute;
+      top: 46px;
+      left: 0;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-card);
+      padding: 8px 0;
+      min-width: 190px;
+      box-shadow: var(--shadow-card);
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-8px) scale(0.96);
+      transition: all 0.25s cubic-bezier(0.22,1,0.36,1);
+      z-index: 200;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+    }
+    .dropdown-menu.open { opacity: 1; visibility: visible; transform: translateY(0) scale(1); }
+    .dropdown-menu .menu-item {
+      padding: 10px 20px;
+      color: var(--text-secondary);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border: none;
+      background: none;
+      width: 100%;
+      text-align: left;
+      font-family: 'Inter', sans-serif;
+    }
+    .dropdown-menu .menu-item:hover { background: rgba(255,255,255,0.03); color: #fff; }
+    .dropdown-menu .menu-item i { width: 18px; font-size: 15px; color: var(--text-muted); }
+    .dropdown-menu .menu-item.danger { color: var(--accent-red); }
+    .dropdown-menu .menu-item.danger i { color: var(--accent-red); }
+    .dropdown-menu .menu-divider { height: 1px; background: var(--border-color); margin: 4px 16px; }
+
+    .analytics-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 1fr;
+      gap: 10px;
+    }
+    .analytics-card {
+      background: var(--bg-card);
+      border-radius: var(--radius-sm);
+      padding: 14px 8px;
+      border: 1px solid var(--border-color);
+      text-align: center;
+    }
+    .analytics-card .value { font-size: 22px; font-weight: 800; color: #fff; line-height: 1.2; }
+    .analytics-card .value.green { color: var(--accent-green); }
+    .analytics-card .value.blue { color: var(--accent-blue); }
+    .analytics-card .value.orange { color: var(--accent-orange); }
+    .analytics-card .value.purple { color: var(--accent-purple); }
+    .analytics-card .label { font-size: 9px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.3px; font-weight: 600; margin-top: 3px; }
+    .analytics-card .sub { font-size: 8px; color: var(--text-muted); margin-top: 1px; }
+
+    .number-display {
+      background: var(--bg-card);
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-color);
+      padding: 16px 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .number-display .number-info { display: flex; flex-direction: column; gap: 2px; }
+    .number-display .number-info .label { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+    .number-display .number-info .number { font-size: 20px; font-weight: 700; color: #fff; font-family: 'Inter', monospace; letter-spacing: 0.5px; }
+    .number-display .number-info .number .highlight { color: var(--accent-cyan); }
+    .number-display .actions { display: flex; gap: 8px; }
+    .number-display .actions button {
+      padding: 6px 14px;
+      border: none;
+      border-radius: var(--radius-full);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      font-family: 'Inter', sans-serif;
+    }
+    .number-display .actions .btn-release { background: rgba(248,113,113,0.10); color: var(--accent-red); border: 1px solid rgba(248,113,113,0.15); }
+    .number-display .actions .btn-release:hover { background: rgba(248,113,113,0.20); }
+    .number-display .actions .btn-copy { background: rgba(59,130,246,0.10); color: var(--accent-blue); border: 1px solid rgba(59,130,246,0.15); }
+    .number-display .actions .btn-copy:hover { background: rgba(59,130,246,0.20); }
+
+    .otp-box {
+      background: rgba(59,130,246,0.08);
+      border: 2px solid var(--accent-blue);
+      border-radius: var(--radius-sm);
+      padding: 14px 18px;
+      margin-top: 8px;
+      display: none;
+      animation: fadeUp 0.3s ease;
+    }
+    .otp-box.active { display: flex; justify-content: space-between; align-items: center; }
+    .otp-box .otp-code { font-size: 28px; font-weight: 800; color: var(--accent-cyan); font-family: 'Inter', monospace; letter-spacing: 4px; }
+    .otp-box .otp-meta { font-size: 11px; color: var(--text-secondary); display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
+    .otp-box .otp-meta .service { font-weight: 600; color: var(--text-primary); }
+    .otp-box .otp-meta .time { color: var(--text-muted); }
+
+    .feed-section {
+      background: var(--bg-card);
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-color);
+      overflow: hidden;
+    }
+    .feed-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border-color);
+      background: rgba(0,0,0,0.2);
+    }
+    .feed-header .feed-title { font-size: 12px; font-weight: 700; color: var(--text-primary); display: flex; align-items: center; gap: 6px; }
+    .feed-header .feed-title i { color: var(--accent-cyan); }
+    .feed-header .feed-badge { font-size: 10px; color: var(--accent-green); background: rgba(52,211,153,0.08); padding: 2px 10px; border-radius: var(--radius-full); border: 1px solid rgba(52,211,153,0.12); display: flex; align-items: center; gap: 4px; }
+    .feed-header .feed-badge .dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--accent-green); animation: pulse-dot 1.4s infinite; }
+    @keyframes pulse-dot { 0%,100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.2; transform: scale(0.6); } }
+    .feed-list { max-height: 200px; overflow-y: auto; padding: 6px 10px; }
+    .feed-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 8px;
+      border-radius: 6px;
+      border-bottom: 1px solid rgba(255,255,255,0.02);
+      font-size: 12px;
+      animation: slideIn 0.3s ease;
+    }
+    @keyframes slideIn { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: translateX(0); } }
+    .feed-item .number { font-weight: 700; font-family: 'Inter', monospace; color: #fff; letter-spacing: 0.5px; }
+    .feed-item .number .highlight { color: var(--accent-cyan); }
+    .feed-item .meta { display: flex; align-items: center; gap: 10px; }
+    .feed-item .meta .platform {
+      font-size: 9px;
+      font-weight: 700;
+      text-transform: uppercase;
+      padding: 1px 8px;
+      border-radius: var(--radius-full);
+      background: rgba(59,130,246,0.10);
+      color: var(--accent-blue);
+      border: 1px solid rgba(59,130,246,0.08);
+    }
+    .feed-item .meta .platform.whatsapp { background: rgba(37,211,102,0.12); color: var(--accent-green); }
+    .feed-item .meta .platform.facebook { background: rgba(59,130,246,0.12); color: var(--accent-blue); }
+    .feed-item .meta .platform.instagram { background: rgba(139,92,246,0.12); color: var(--accent-purple); }
+    .feed-item .meta .time { font-size: 10px; color: var(--text-muted); white-space: nowrap; }
+    .feed-empty { text-align: center; padding: 20px 0; color: var(--text-muted); font-size: 13px; }
+    .feed-empty i { display: block; font-size: 28px; margin-bottom: 6px; color: var(--border-color); }
+
+    .dash-support { margin-top: 4px; }
+    .dash-support .support-btn { width: 100%; justify-content: center; padding: 14px; font-size: 16px; }
+
+    /* ── CATEGORY OVERLAY ── */
+    .category-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.7);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      z-index: 300;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .category-overlay.active { display: flex; }
+    .category-modal {
+      background: var(--bg-card);
+      border-radius: var(--radius-card);
+      padding: 24px 20px;
+      max-width: 340px;
+      width: 100%;
+      border: 1px solid var(--border-color);
+      box-shadow: var(--shadow-card);
+      animation: fadeUp 0.3s ease;
+    }
+    .category-modal h3 { font-size: 18px; font-weight: 700; color: #fff; text-align: center; margin-bottom: 4px; }
+    .category-modal p { font-size: 13px; color: var(--text-secondary); text-align: center; margin-bottom: 16px; }
+    .category-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+    .category-btn {
+      padding: 14px 8px;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      background: var(--bg-primary);
+      color: var(--text-secondary);
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+      transition: var(--transition);
+      font-family: 'Inter', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+    .category-btn i { font-size: 22px; }
+    .category-btn:hover { border-color: var(--accent-blue); color: #fff; background: rgba(59,130,246,0.05); }
+    .category-btn .service-count { font-size: 9px; color: var(--text-muted); }
+    .category-close { display: block; margin: 12px auto 0; background: none; border: none; color: var(--text-muted); font-size: 13px; cursor: pointer; font-family: 'Inter', sans-serif; transition: var(--transition); }
+    .category-close:hover { color: #fff; }
+
+
+    .country-btn {
+      position: relative;
+      min-height: 78px;
+    }
+    .country-btn .country-flag { font-size: 25px; line-height: 1; }
+    .country-btn .country-name { font-size: 12px; }
+    .country-btn .live-badge {
+      font-size: 8px;
+      color: var(--accent-green);
+      background: rgba(52,211,153,.08);
+      border: 1px solid rgba(52,211,153,.12);
+      border-radius: 50px;
+      padding: 2px 6px;
+    }
+    .country-btn.offline .live-badge {
+      color: var(--text-muted);
+      background: rgba(255,255,255,.03);
+      border-color: var(--border-color);
+    }
+
+    /* ── TOAST ── */
+    .toast {
+      position: fixed;
+      bottom: 80px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: var(--bg-card);
+      backdrop-filter: blur(16px);
+      padding: 16px 24px;
+      border-radius: var(--radius-full);
+      border: 1px solid var(--border-color);
+      color: #fff;
+      font-size: 14px;
+      font-weight: 500;
+      box-shadow: var(--shadow-card);
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.35s cubic-bezier(0.22,1,0.36,1);
+      z-index: 999;
+      pointer-events: none;
+      max-width: 90%;
+      text-align: center;
+      line-height: 1.5;
+    }
+    .toast.show { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0); }
+    .toast i { margin-right: 10px; }
+    .toast.success i { color: var(--accent-green); }
+    .toast.error i { color: var(--accent-red); }
+    .toast.info i { color: var(--accent-cyan); }
+
+    /* ── BOTTOM NAV ── */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      max-width: 480px;
+      margin: 0 auto;
+      background: var(--bg-secondary);
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-around;
+      padding: 6px 0 env(safe-area-inset-bottom, 6px) 0;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      z-index: 100;
+    }
+    .bottom-nav .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0px;
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      font-family: 'Inter', sans-serif;
+      padding: 4px 12px;
+      position: relative;
+      min-width: 48px;
+    }
+    .bottom-nav .nav-item i { font-size: 20px; transition: var(--transition); }
+    .bottom-nav .nav-item:hover { color: var(--text-secondary); }
+    .bottom-nav .nav-item.active { color: var(--accent-blue); }
+    .bottom-nav .nav-item.active i { text-shadow: 0 0 20px rgba(59,130,246,0.2); }
+
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+<div id="app">
+
+  <!-- ─── AUTH SCREEN ─── -->
+  <div id="authScreen">
+    <div class="brand">
+      <img src="https://files.catbox.moe/yc8ex4.jpg" alt="LEGAND HUSE DEV" class="logo-img" />
+      <h1>LEGAND <span>HUSE</span> DEV</h1>
+      <p>OTP Console · Live Feed</p>
+    </div>
+    <div class="auth-box">
+      <div class="auth-msg" id="authMsg"></div>
+      <div class="form-group" id="authNameGroup">
+        <label>Full Name</label>
+        <input type="text" id="authName" placeholder="e.g. Hussain Ali" />
+      </div>
+      <div class="form-group">
+        <label>Email / Username</label>
+        <input type="text" id="authEmail" placeholder="you@example.com" />
+      </div>
+      <div class="form-group" id="authPhoneGroup">
+        <label>Phone Number</label>
+        <div class="phone-wrapper">
+          <select id="phoneCountryCode">
+            <option value="+92" data-example="3xxxxxxxx">🇵🇰 +92</option>
+            <option value="+1" data-example="5551234567">🇺🇸 +1</option>
+            <option value="+44" data-example="7911123456">🇬🇧 +44</option>
+            <option value="+91" data-example="9876543210">🇮🇳 +91</option>
+            <option value="+61" data-example="412345678">🇦🇺 +61</option>
+            <option value="+81" data-example="9012345678">🇯🇵 +81</option>
+            <option value="+86" data-example="13800138000">🇨🇳 +86</option>
+            <option value="+49" data-example="15123456789">🇩🇪 +49</option>
+            <option value="+33" data-example="612345678">🇫🇷 +33</option>
+            <option value="+55" data-example="11912345678">🇧🇷 +55</option>
+          </select>
+          <input type="tel" id="authPhone" placeholder="3xxxxxxxx" />
+        </div>
+      </div>
+      <div class="form-group" id="agentEmailGroup">
+        <label>Agent Email <span style="color:var(--accent-red);">*</span></label>
+        <input type="email" id="authAgentEmail" placeholder="agent@example.com" />
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="authPassword" placeholder="••••••••" />
+      </div>
+      <button type="button" class="btn-auth" id="authBtn">Log In</button>
+      <div class="toggle-link">
+        <span id="toggleAuthText">Don't have an account? <span id="toggleAuthLink" role="button" tabindex="0">Sign up</span></span>
+      </div>
+      <div class="support-btn-wrap">
+        <a href="#" class="support-btn" id="supportBtnAuth" target="_blank">
+          <i class="fab fa-whatsapp"></i> Support / Contact
+          <i class="fas fa-arrow-right" style="font-size:13px;opacity:0.6;"></i>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── DASHBOARD ─── -->
+  <div id="dashboard">
+    <div class="dash-header">
+      <div class="left">
+        <div class="menu-dots" id="menuDots"><i class="fas fa-ellipsis-v"></i></div>
+        <div class="dropdown-menu" id="dropdownMenu">
+          <button class="menu-item" data-action="refresh"><i class="fas fa-sync"></i> Refresh OTPs</button>
+          <button class="menu-item" data-action="numbergenerator"><i class="fas fa-wand-magic-sparkles"></i> Number Generator</button>
+          <button class="menu-item" data-action="mynumbers"><i class="fas fa-list"></i> My Numbers</button>
+          <div class="menu-divider"></div>
+          <button class="menu-item" data-action="system"><i class="fas fa-microchip"></i> System Info</button>
+          <button class="menu-item danger" data-action="logout"><i class="fas fa-sign-out-alt"></i> Logout</button>
+        </div>
+        <div class="greeting">
+          <span class="greet-label">Good Afternoon</span>
+          <span class="user-name" id="dashUserName">Hussain <i class="fas fa-bolt"></i></span>
+        </div>
+      </div>
+      <button class="logout-btn" id="logoutBtn"><i class="fas fa-sign-out-alt"></i></button>
+    </div>
+
+    <!-- Stats -->
+    <div class="analytics-grid">
+      <div class="analytics-card"><div class="value blue" id="statTotal">0</div><div class="label">Total OTPs</div><div class="sub">Last 24h</div></div>
+      <div class="analytics-card"><div class="value green" id="statSuccess">0</div><div class="label">Success</div><div class="sub">Rate 0%</div></div>
+      <div class="analytics-card"><div class="value orange" id="statPending">0</div><div class="label">Pending</div><div class="sub">In queue</div></div>
+      <div class="analytics-card"><div class="value purple" id="statActive">0</div><div class="label">Active Sessions</div><div class="sub">Online</div></div>
+    </div>
+
+    <!-- Number Display -->
+    <div class="number-display" id="numberDisplay">
+      <div class="number-info">
+        <span class="label">Active Number</span>
+        <span class="number" id="activeNumber">No number</span>
+      </div>
+      <div class="actions">
+        <button class="btn-copy" id="copyNumberBtn"><i class="fas fa-copy"></i></button>
+        <button class="btn-release" id="releaseNumberBtn"><i class="fas fa-trash"></i></button>
+      </div>
+    </div>
+
+    <!-- OTP Box -->
+    <div class="otp-box" id="otpBox">
+      <span class="otp-code" id="otpCode">— — — —</span>
+      <div class="otp-meta">
+        <span class="service" id="otpService">—</span>
+        <span class="time" id="otpTime">—</span>
+      </div>
+    </div>
+
+    <!-- Feed -->
+    <div class="feed-section">
+      <div class="feed-header">
+        <div class="feed-title"><i class="fas fa-wave-square"></i> Live OTP Feed</div>
+        <div class="feed-badge"><span class="dot"></span> <span id="feedStatus">Live</span></div>
+      </div>
+      <div class="feed-list" id="feedList">
+        <div class="feed-empty"><i class="fas fa-inbox"></i> No OTPs yet</div>
+      </div>
+    </div>
+
+    <!-- Number Generator -->
+    <div class="dash-support">
+      <button class="support-btn" id="dashboardNumberGenerator" type="button">
+        <i class="fas fa-wand-magic-sparkles"></i> Number Generator
+        <i class="fas fa-arrow-right" style="font-size:13px;opacity:0.6;"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- ─── CATEGORY OVERLAY ─── -->
+  <div class="category-overlay" id="categoryOverlay">
+    <div class="category-modal">
+      <h3>Select Service</h3>
+      <p>Choose a platform to request a number</p>
+      <div class="category-grid" id="categoryGrid">
+        <div style="text-align:center;color:var(--text-muted);padding:20px;grid-column:1/-1;">Loading services...</div>
+      </div>
+      <button class="category-close" id="categoryClose">Cancel</button>
+    </div>
+  </div>
+
+
+  <!-- ─── COUNTRY CATEGORIES ─── -->
+  <div class="category-overlay" id="countryOverlay">
+    <div class="category-modal" style="max-width:380px;">
+      <h3>🌍 Select Country</h3>
+      <p>All available country categories · live status</p>
+      <input id="countrySearch" type="search"
+        placeholder="🔎 Search country..."
+        style="width:100%;padding:12px 14px;margin-bottom:12px;background:var(--bg-primary);border:1px solid var(--border-color);border-radius:var(--radius-sm);color:#fff;outline:none;">
+      <div id="countryGrid" class="category-grid" style="grid-template-columns:1fr 1fr;max-height:360px;">
+        <div style="text-align:center;color:var(--text-muted);padding:20px;grid-column:1/-1;">Loading countries...</div>
+      </div>
+      <div id="selectedCountry" style="margin-top:12px;text-align:center;color:var(--accent-cyan);font-size:13px;font-weight:700;">No country selected</div>
+      <button id="generateNumberBtn" class="support-btn" type="button"
+        style="width:100%;justify-content:center;margin-top:12px;padding:13px;">
+        <i class="fas fa-wand-magic-sparkles"></i> Generate Number
+      </button>
+      <button class="category-close" id="countryClose">Cancel</button>
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast"><i class="fas fa-check-circle"></i><span id="toastMsg">Done</span></div>
+
+  <!-- BOTTOM NAV -->
+  <div class="bottom-nav" id="bottomNav">
+    <button class="nav-item active" data-view="home"><i class="fas fa-house"></i><span>Home</span></button>
+    <button class="nav-item" data-view="refresh"><i class="fas fa-sync"></i><span>Refresh</span></button>
+    <button class="nav-item" data-view="getnumber"><i class="fas fa-phone"></i><span>Get</span></button>
+    <button class="nav-item" data-view="logout"><i class="fas fa-sign-out-alt"></i><span>Logout</span></button>
+  </div>
+
+</div>
+
+<script>
+  (function() {
+    'use strict';
+
+    // ── CONFIG ──
+    const ADMIN_EMAIL = 'husedev786@gmail.com';
+    const ADMIN_PASSWORD = '123456';
+    const WHATSAPP_NUMBER = '923124015719';
+    const WHATSAPP_MESSAGE = 'ASSLAM O LIKUM HUSE SR KASA HA AP SR MA NA APNA PANEL BANWANA HA TU AP MUJHA BASS AGENT EMIL BTA DAN SHUKRY';
+    const API_PROXY = window.location.origin + window.location.pathname;
+
+    // ── STATE ──
+    const STATE = {
+      users: JSON.parse(localStorage.getItem('otp_users')) || [],
+      currentUser: JSON.parse(sessionStorage.getItem('otp_session')) || null,
+      isLogin: false,
+      activeNumber: null,
+      activeNumberId: null,
+      otps: [],
+      myNumbers: [],
+      services: [],
+      selectedService: sessionStorage.getItem('selectedService') || null,
+      selectedCountry: sessionStorage.getItem('selectedCountry') || null,
+      stats: { otp_count: 0, countries_count: 0, services_count: 0, available_numbers: 0 },
+      refreshInterval: null,
+      otpCheckInterval: null,
+    };
+
+    // ── DOM REFS ──
+    const $ = id => document.getElementById(id);
+    const authScreen = $('authScreen');
+    const dashboard = $('dashboard');
+    const authMsg = $('authMsg');
+    const authName = $('authName');
+    const authEmail = $('authEmail');
+    const authPhoneGroup = $('authPhoneGroup');
+    const authPhone = $('authPhone');
+    const phoneCountryCode = $('phoneCountryCode');
+    const authAgentEmail = $('authAgentEmail');
+    const authPassword = $('authPassword');
+    const authBtn = $('authBtn');
+    const authNameGroup = $('authNameGroup');
+    const agentEmailGroup = $('agentEmailGroup');
+    const toggleAuthText = $('toggleAuthText');
+    const toggleAuthLink = $('toggleAuthLink');
+
+    const dashUserName = $('dashUserName');
+    const menuDots = $('menuDots');
+    const dropdownMenu = $('dropdownMenu');
+    const logoutBtn = $('logoutBtn');
+    const supportBtnAuth = $('supportBtnAuth');
+    const toast = $('toast');
+    const toastMsg = $('toastMsg');
+    const navItems = document.querySelectorAll('.nav-item');
+    const menuItems = document.querySelectorAll('.dropdown-menu .menu-item');
+
+    const statTotal = $('statTotal');
+    const statSuccess = $('statSuccess');
+    const statPending = $('statPending');
+    const statActive = $('statActive');
+
+    const activeNumber = $('activeNumber');
+    const copyNumberBtn = $('copyNumberBtn');
+    const releaseNumberBtn = $('releaseNumberBtn');
+    const otpBox = $('otpBox');
+    const otpCode = $('otpCode');
+    const otpService = $('otpService');
+    const otpTime = $('otpTime');
+    const feedList = $('feedList');
+    const feedStatus = $('feedStatus');
+
+    const categoryOverlay = $('categoryOverlay');
+    const categoryClose = $('categoryClose');
+    const categoryGrid = $('categoryGrid');
+    const countryOverlay = $('countryOverlay');
+    const countryGrid = $('countryGrid');
+    const countrySearch = $('countrySearch');
+    const countryClose = $('countryClose');
+    const selectedCountry = $('selectedCountry');
+    const generateNumberBtn = $('generateNumberBtn');
+    const dashboardNumberGenerator = $('dashboardNumberGenerator');
+
+    // ── HELPERS ──
+    function showToast(msg, type = 'success') {
+      toast.className = 'toast show ' + type;
+      toastMsg.textContent = msg;
+      clearTimeout(toast._timer);
+      toast._timer = setTimeout(() => toast.classList.remove('show'), 4000);
+    }
+
+    function showAuthMsg(msg, type = 'error') {
+      authMsg.textContent = msg;
+      authMsg.className = 'auth-msg ' + type;
+    }
+    function hideAuthMsg() {
+      authMsg.className = 'auth-msg';
+      authMsg.textContent = '';
+    }
+
+    function saveUsers() { localStorage.setItem('otp_users', JSON.stringify(STATE.users)); }
+    function saveSession(user) {
+      STATE.currentUser = user;
+      sessionStorage.setItem('otp_session', JSON.stringify(user));
+    }
+    function clearSession() {
+      STATE.currentUser = null;
+      sessionStorage.removeItem('otp_session');
+    }
+
+    function getWhatsAppLink() {
+      const encoded = encodeURIComponent(WHATSAPP_MESSAGE);
+      return `https://api.whatsapp.com/send?phone=${WHATSAPP_NUMBER}&text=${encoded}`;
+    }
+
+    function updatePhonePlaceholder() {
+      const sel = phoneCountryCode.options[phoneCountryCode.selectedIndex];
+      authPhone.placeholder = sel.getAttribute('data-example') || 'xxxxxxxx';
+    }
+
+    function formatTime(ts) {
+      if (!ts) return '—';
+      const d = new Date(ts);
+      return d.toLocaleTimeString();
+    }
+
+    // ── SERVER-SIDE AGENT VERIFICATION ──
+    async function verifyAgentEmailOnServer(agentEmail) {
+      try {
+        const res = await fetch(API_PROXY + '?action=verifyAgentEmail', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ agentEmail: String(agentEmail || '').trim().toLowerCase() })
+        });
+        const data = await res.json();
+        return !!(data && data.success && data.approved === true);
+      } catch (err) {
+        console.error('Agent verification failed:', err);
+        return false;
+      }
+    }
+
+    // ── API CALLS ──
+    async function apiCall(action, options = {}) {
+      const url = API_PROXY + '?action=' + action;
+      const config = {
+        method: options.method || 'GET',
+        headers: { 'Content-Type': 'application/json' },
+      };
+      if (options.body) config.body = JSON.stringify(options.body);
+      try {
+        const res = await fetch(url, config);
+        const text = await res.text();
+        let data;
+        try { data = JSON.parse(text); } catch (_) {
+          const preview = text.replace(/\s+/g, ' ').slice(0, 180);
+          return { success: false, error: `API proxy returned HTML/non-JSON (HTTP ${res.status}). Check the Cloudflare Worker deployment and API_TOKEN secret. ${preview}` };
+        }
+        return data;
+      } catch (e) {
+        console.error('Proxy error:', e);
+        return { success: false, error: e.message };
+      }
+    }
+
+    async function fetchMyNumbers() {
+      const res = await apiCall('getMyNumbers');
+      if (res && res.success && res.numbers) {
+        STATE.myNumbers = res.numbers;
+        if (STATE.myNumbers.length > 0) {
+          const stored = sessionStorage.getItem('activeNumber');
+          let found = null;
+          if (stored) found = STATE.myNumbers.find(n => n.number === stored);
+          if (!found) found = STATE.myNumbers[0];
+          STATE.activeNumber = found.number;
+          STATE.activeNumberId = found.id;
+          sessionStorage.setItem('activeNumber', found.number);
+        } else {
+          STATE.activeNumber = null;
+          STATE.activeNumberId = null;
+          sessionStorage.removeItem('activeNumber');
+        }
+        updateNumberDisplay();
+        return res;
+      }
+      return res;
+    }
+
+    async function requestNumber(service, country) {
+      service = service || STATE.selectedService || sessionStorage.getItem('selectedService') || 'WhatsApp';
+      country = country || STATE.selectedCountry || sessionStorage.getItem('selectedCountry');
+
+      if (!country) {
+        showToast('Please select a country first', 'error');
+        return { success: false, error: 'Country not selected' };
+      }
+
+      STATE.selectedService = service;
+      STATE.selectedCountry = country;
+      sessionStorage.setItem('selectedService', service);
+      sessionStorage.setItem('selectedCountry', country);
+
+      const res = await apiCall('requestNumber', { method: 'POST', body: { service, country } });
+      if (res && res.success && res.number) {
+        STATE.activeNumber = res.number;
+        STATE.activeNumberId = res.id || 'tx_' + Date.now();
+        sessionStorage.setItem('activeNumber', res.number);
+        updateNumberDisplay();
+        showToast(`📱 Number ${res.number} requested for ${service}`, 'success');
+        STATE.myNumbers.push({ number: res.number, id: STATE.activeNumberId, service, country });
+        startOTPPolling(res.number);
+        await fetchMyOTPs(20);
+        return res;
+      } else {
+        showToast('Failed to request number: ' + (res?.error || 'Unknown error'), 'error');
+        return res;
+      }
+    }
+
+    async function releaseNumber(number) {
+      const res = await apiCall('releaseNumber', { method: 'POST', body: { number } });
+      if (res && res.success) {
+        STATE.activeNumber = null;
+        STATE.activeNumberId = null;
+        sessionStorage.removeItem('activeNumber');
+        STATE.myNumbers = STATE.myNumbers.filter(n => n.number !== number);
+        updateNumberDisplay();
+        if (STATE.otpCheckInterval) {
+          clearInterval(STATE.otpCheckInterval);
+          STATE.otpCheckInterval = null;
+        }
+        showToast('Number released successfully', 'info');
+        await fetchMyOTPs(20);
+        return res;
+      } else {
+        showToast('Failed to release number: ' + (res?.error || 'Unknown error'), 'error');
+        return res;
+      }
+    }
+
+    async function fetchMyOTPs(limit = 20) {
+      const res = await apiCall('getMyOTPs&limit=' + limit);
+      if (res && res.success && res.otps) {
+        STATE.otps = res.otps;
+        renderFeed();
+        updateStats();
+        return res;
+      }
+      return res;
+    }
+
+    async function fetchLatestOTP(number) {
+      const res = await apiCall('getLatestOTP&number=' + encodeURIComponent(number));
+      if (res && res.success) {
+        if (res.has_otp) {
+          showOTP(res.otp_code, res.service || 'Unknown', res.time);
+          await fetchMyOTPs(20);
+        }
+        return res;
+      }
+      return res;
+    }
+
+    async function fetchStats() {
+      const res = await apiCall('getStats&period=daily');
+      if (res && res.otp_count !== undefined) {
+        STATE.stats = res;
+        updateStats();
+        return res;
+      }
+      return res;
+    }
+
+    async function fetchServices() {
+      const res = await apiCall('getServices');
+      if (res && res.success && res.services) {
+        STATE.services = res.services;
+        renderServices();
+        return res.services;
+      } else {
+        showToast('⚠️ Could not load services: ' + (res?.error || 'Unknown'), 'error');
+        categoryGrid.innerHTML = `<div style="text-align:center;color:var(--accent-red);padding:20px;grid-column:1/-1;">Failed to load services<br><span style="font-size:11px;color:var(--text-muted);">Check PHP proxy</span></div>`;
+        return [];
+      }
+    }
+
+
+    // ── COUNTRY CATEGORIES / FLAGS ──
+    const COUNTRY_FLAGS = {
+      Afghanistan:'🇦🇫', Albania:'🇦🇱', Algeria:'🇩🇿', Andorra:'🇦🇩', Angola:'🇦🇴',
+      Argentina:'🇦🇷', Armenia:'🇦🇲', Australia:'🇦🇺', Austria:'🇦🇹', Azerbaijan:'🇦🇿',
+      Bahamas:'🇧🇸', Bahrain:'🇧🇭', Bangladesh:'🇧🇩', Barbados:'🇧🇧', Belarus:'🇧🇾',
+      Belgium:'🇧🇪', Belize:'🇧🇿', Benin:'🇧🇯', Bhutan:'🇧🇹', Bolivia:'🇧🇴',
+      Bosnia:'🇧🇦', Botswana:'🇧🇼', Brazil:'🇧🇷', Brunei:'🇧🇳', Bulgaria:'🇧🇬',
+      Burundi:'🇧🇮', Cambodia:'🇰🇭', Cameroon:'🇨🇲', Canada:'🇨🇦', Chad:'🇹🇩',
+      Chile:'🇨🇱', China:'🇨🇳', Colombia:'🇨🇴', Congo:'🇨🇬', Croatia:'🇭🇷',
+      Cuba:'🇨🇺', Cyprus:'🇨🇾', Czechia:'🇨🇿', Denmark:'🇩🇰', Djibouti:'🇩🇯',
+      Dominica:'🇩🇲', Ecuador:'🇪🇨', Egypt:'🇪🇬', Estonia:'🇪🇪', Ethiopia:'🇪🇹',
+      Fiji:'🇫🇯', Finland:'🇫🇮', France:'🇫🇷', Gabon:'🇬🇦', Gambia:'🇬🇲',
+      Georgia:'🇬🇪', Germany:'🇩🇪', Ghana:'🇬🇭', Greece:'🇬🇷', Grenada:'🇬🇩',
+      Guatemala:'🇬🇹', Guinea:'🇬🇳', Guyana:'🇬🇾', Haiti:'🇭🇹', Honduras:'🇭🇳',
+      Hungary:'🇭🇺', Iceland:'🇮🇸', India:'🇮🇳', Indonesia:'🇮🇩', Iran:'🇮🇷',
+      Iraq:'🇮🇶', Ireland:'🇮🇪', Israel:'🇮🇱', Italy:'🇮🇹', Jamaica:'🇯🇲',
+      Japan:'🇯🇵', Jordan:'🇯🇴', Kazakhstan:'🇰🇿', Kenya:'🇰🇪', Kuwait:'🇰🇼',
+      Kyrgyzstan:'🇰🇬', Laos:'🇱🇦', Latvia:'🇱🇻', Lebanon:'🇱🇧', Lesotho:'🇱🇸',
+      Liberia:'🇱🇷', Libya:'🇱🇾', Lithuania:'🇱🇹', Luxembourg:'🇱🇺', Madagascar:'🇲🇬',
+      Malawi:'🇲🇼', Malaysia:'🇲🇾', Maldives:'🇲🇻', Mali:'🇲🇱', Malta:'🇲🇹',
+      Mauritania:'🇲🇷', Mauritius:'🇲🇺', Mexico:'🇲🇽', Moldova:'🇲🇩', Monaco:'🇲🇨',
+      Mongolia:'🇲🇳', Montenegro:'🇲🇪', Morocco:'🇲🇦', Mozambique:'🇲🇿', Myanmar:'🇲🇲',
+      Namibia:'🇳🇦', Nepal:'🇳🇵', Netherlands:'🇳🇱', 'New Zealand':'🇳🇿', Nicaragua:'🇳🇮',
+      Niger:'🇳🇪', Nigeria:'🇳🇬', Norway:'🇳🇴', Oman:'🇴🇲', Pakistan:'🇵🇰',
+      Palestine:'🇵🇸', Panama:'🇵🇦', Paraguay:'🇵🇾', Peru:'🇵🇪', Philippines:'🇵🇭',
+      Poland:'🇵🇱', Portugal:'🇵🇹', Qatar:'🇶🇦', Romania:'🇷🇴', Russia:'🇷🇺',
+      Rwanda:'🇷🇼', 'Saudi Arabia':'🇸🇦', Senegal:'🇸🇳', Serbia:'🇷🇸', Singapore:'🇸🇬',
+      Slovakia:'🇸🇰', Slovenia:'🇸🇮', Somalia:'🇸🇴', 'South Africa':'🇿🇦', 'South Korea':'🇰🇷',
+      Spain:'🇪🇸', 'Sri Lanka':'🇱🇰', Sudan:'🇸🇩', Suriname:'🇸🇷', Sweden:'🇸🇪',
+      Switzerland:'🇨🇭', Syria:'🇸🇾', Taiwan:'🇹🇼', Tajikistan:'🇹🇯', Tanzania:'🇹🇿',
+      Thailand:'🇹🇭', Togo:'🇹🇬', Tonga:'🇹🇴', Tunisia:'🇹🇳', Turkey:'🇹🇷',
+      Turkmenistan:'🇹🇲', Uganda:'🇺🇬', Ukraine:'🇺🇦', 'United Arab Emirates':'🇦🇪',
+      'United Kingdom':'🇬🇧', 'United States':'🇺🇸', Uruguay:'🇺🇾', Uzbekistan:'🇺🇿',
+      Venezuela:'🇻🇪', Vietnam:'🇻🇳', Yemen:'🇾🇪', Zambia:'🇿🇲', Zimbabwe:'🇿🇼'
+    };
+
+    let LIVE_COUNTRIES = [];
+
+    function getCountryName(item) {
+      if (typeof item === 'string') return item.trim();
+      return String(item?.name || item?.country || item?.title || '').trim();
+    }
+
+    function getCountryFlag(name) {
+      const exact = COUNTRY_FLAGS[name];
+      if (exact) return exact;
+      const key = Object.keys(COUNTRY_FLAGS).find(k => k.toLowerCase() === name.toLowerCase());
+      return key ? COUNTRY_FLAGS[key] : '🌍';
+    }
+
+    function extractCountryList(res) {
+      const raw = Array.isArray(res?.countries) ? res.countries :
+                  Array.isArray(res?.data) ? res.data :
+                  Array.isArray(res) ? res : [];
+      return raw.map(item => ({
+        name: getCountryName(item),
+        count: typeof item === 'object' ? (item.count ?? item.available ?? item.numbers ?? '') : ''
+      })).filter(x => x.name);
+    }
+
+    async function fetchLiveCountries() {
+      countryGrid.innerHTML = `<div style="text-align:center;color:var(--text-muted);padding:20px;grid-column:1/-1;">🌐 Loading live countries...</div>`;
+      const service = STATE.selectedService || sessionStorage.getItem('selectedService') || 'WhatsApp';
+      const res = await apiCall('getCountries&service=' + encodeURIComponent(service));
+      if (!res || res.success === false) {
+        countryGrid.innerHTML = `<div style="text-align:center;color:var(--accent-red);padding:20px;grid-column:1/-1;">⚠️ Could not load countries</div>`;
+        return;
+      }
+      LIVE_COUNTRIES = extractCountryList(res);
+      renderCountries(LIVE_COUNTRIES);
+    }
+
+    function renderCountries(list) {
+      if (!list.length) {
+        countryGrid.innerHTML = `<div style="text-align:center;color:var(--text-muted);padding:20px;grid-column:1/-1;">No live countries found</div>`;
+        return;
+      }
+      countryGrid.innerHTML = list.map(item => {
+        const flag = getCountryFlag(item.name);
+        const live = item.count !== '' ? Number(item.count) > 0 : true;
+        return `<button class="category-btn country-btn ${live ? '' : 'offline'}"
+          data-country="${item.name.replace(/"/g, '&quot;')}">
+          <span class="country-flag">${flag}</span>
+          <span class="country-name">${item.name}</span>
+          <span class="live-badge">${live ? '● LIVE' : '○ UNAVAILABLE'}</span>
+        </button>`;
+      }).join('');
+
+      countryGrid.querySelectorAll('.country-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const country = btn.dataset.country;
+          const flag = getCountryFlag(country);
+          STATE.selectedCountry = country;
+          sessionStorage.setItem('selectedCountry', country);
+          selectedCountry.innerHTML = `<span style="font-size:21px;">${flag}</span> ${country} <span style="color:var(--accent-green);">✓</span>`;
+          showToast(`${flag} ${country} selected`, 'info');
+        });
+      });
+    }
+
+    function openCountryCategories(service = null) {
+      if (service) {
+        STATE.selectedService = service;
+        sessionStorage.setItem('selectedService', service);
+      }
+
+      countryOverlay.classList.add('active');
+      countrySearch.value = '';
+
+      const currentService = STATE.selectedService || sessionStorage.getItem('selectedService') || 'WhatsApp';
+      const currentCountry = STATE.selectedCountry || sessionStorage.getItem('selectedCountry');
+
+      selectedCountry.innerHTML = currentCountry
+        ? `${getCountryFlag(currentCountry)} ${currentCountry} · ${currentService}`
+        : `📱 ${currentService} · Select a country`;
+
+      fetchLiveCountries();
+      closeMenu();
+    }
+
+    function closeCountryCategories() {
+      countryOverlay.classList.remove('active');
+    }
+
+    // ── RENDER FUNCTIONS ──
+    function renderServices() {
+      const services = STATE.services;
+      if (!services || services.length === 0) {
+        categoryGrid.innerHTML = `<div style="text-align:center;color:var(--text-muted);padding:20px;grid-column:1/-1;">No services available</div>`;
+        return;
+      }
+      let html = '';
+      const iconMap = {
+        'WhatsApp': 'fab fa-whatsapp',
+        'Facebook': 'fab fa-facebook',
+        'Instagram': 'fab fa-instagram',
+        'Telegram': 'fab fa-telegram',
+        'TikTok': 'fab fa-tiktok',
+        'Twitter': 'fab fa-twitter',
+        'Google': 'fab fa-google',
+        'Meta': 'fas fa-share-nodes',
+        'Snapchat': 'fab fa-snapchat',
+        'LinkedIn': 'fab fa-linkedin',
+        'YouTube': 'fab fa-youtube',
+        'Amazon': 'fab fa-amazon',
+        'Apple': 'fab fa-apple',
+        'Microsoft': 'fab fa-microsoft',
+        'Uber': 'fas fa-taxi',
+        'Zoom': 'fas fa-video',
+        'Discord': 'fab fa-discord',
+        'Reddit': 'fab fa-reddit',
+        'Pinterest': 'fab fa-pinterest',
+        'Tumblr': 'fab fa-tumblr'
+      };
+      services.forEach(service => {
+        const name = typeof service === 'string' ? service : (service.name || 'Unknown');
+        const count = typeof service === 'object' ? (service.count || '') : '';
+        const icon = iconMap[name] || 'fas fa-cube';
+        html += `
+          <button class="category-btn" data-service="${name}">
+            <i class="${icon}"></i>
+            ${name}
+            ${count ? `<span class="service-count">${count}</span>` : ''}
+          </button>
+        `;
+      });
+      categoryGrid.innerHTML = html;
+      document.querySelectorAll('.category-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const service = btn.dataset.service;
+          handleCategorySelection(service);
+        });
+      });
+    }
+
+    function renderFeed() {
+      const otps = STATE.otps;
+      if (!otps || otps.length === 0) {
+        feedList.innerHTML = `<div class="feed-empty"><i class="fas fa-inbox"></i> No OTPs yet</div>`;
+        return;
+      }
+      let html = '';
+      const items = otps.slice().reverse().slice(0, 20);
+      items.forEach(item => {
+        const service = item.service || 'Unknown';
+        const serviceClass = service.toLowerCase();
+        const number = item.number || '—';
+        const time = item.time || item.created_at || formatTime(Date.now());
+        const displayNum = number.length > 10 ? number.slice(0, 6) + '<span class="highlight">' + number.slice(6) + '</span>' : number;
+        html += `
+          <div class="feed-item">
+            <span class="number">${displayNum}</span>
+            <div class="meta">
+              <span class="platform ${serviceClass}">${service}</span>
+              <span class="time">${formatTime(time)}</span>
+            </div>
+          </div>
+        `;
+      });
+      feedList.innerHTML = html;
+    }
+
+    function updateStats() {
+      const otps = STATE.otps || [];
+      const total = otps.length;
+      const success = otps.filter(o => o.status === 'success' || o.has_otp).length;
+      const pending = total - success;
+      statTotal.textContent = total || (STATE.stats?.otp_count || 0);
+      statSuccess.textContent = success || Math.floor((STATE.stats?.otp_count || 0) * 0.7);
+      statPending.textContent = pending || Math.floor((STATE.stats?.otp_count || 0) * 0.3);
+      statActive.textContent = STATE.myNumbers ? STATE.myNumbers.length : 0;
+    }
+
+    function updateNumberDisplay() {
+      if (STATE.activeNumber) {
+        const country = STATE.selectedCountry || sessionStorage.getItem('selectedCountry') || '';
+        const flag = country ? getCountryFlag(country) : '';
+        activeNumber.innerHTML =
+          `${flag ? `<span style="font-size:21px;margin-right:7px;">${flag}</span>` : ''}<span>${STATE.activeNumber}</span>`;
+        activeNumber.style.color = '#fff';
+      } else {
+        activeNumber.textContent = 'No number';
+        activeNumber.style.color = 'var(--text-muted)';
+      }
+    }
+
+    function showOTP(code, service, time) {
+      otpBox.classList.add('active');
+      otpCode.textContent = code;
+      otpService.textContent = service || '—';
+      otpTime.textContent = time || formatTime(Date.now());
+      if (window._otpTimeout) clearTimeout(window._otpTimeout);
+      window._otpTimeout = setTimeout(() => otpBox.classList.remove('active'), 30000);
+    }
+
+    function startOTPPolling(number) {
+      if (STATE.otpCheckInterval) {
+        clearInterval(STATE.otpCheckInterval);
+        STATE.otpCheckInterval = null;
+      }
+      let attempts = 0;
+      STATE.otpCheckInterval = setInterval(async () => {
+        attempts++;
+        if (attempts > 60) {
+          clearInterval(STATE.otpCheckInterval);
+          STATE.otpCheckInterval = null;
+          return;
+        }
+        if (!STATE.activeNumber) {
+          clearInterval(STATE.otpCheckInterval);
+          STATE.otpCheckInterval = null;
+          return;
+        }
+        const res = await fetchLatestOTP(number);
+        if (res && res.success && res.has_otp) {
+          clearInterval(STATE.otpCheckInterval);
+          STATE.otpCheckInterval = null;
+          await fetchMyOTPs(20);
+        }
+      }, 2000);
+    }
+
+    // ── AUTH ──
+    function renderAuth(mode) {
+      STATE.isLogin = mode === 'login';
+      if (mode === 'login') {
+        authBtn.textContent = 'LOGIN';
+        authNameGroup.classList.add('hidden');
+        authPhoneGroup.classList.add('hidden');
+        agentEmailGroup.classList.add('hidden');
+        toggleAuthText.innerHTML = `Don't have an account? <span id="toggleAuthLink" role="button" tabindex="0">SIGN UP</span>`;
+      } else {
+        authBtn.textContent = 'SIGN UP';
+        authNameGroup.classList.remove('hidden');
+        authPhoneGroup.classList.remove('hidden');
+        agentEmailGroup.classList.remove('hidden');
+        toggleAuthText.innerHTML = `Already have an account? <span id="toggleAuthLink" role="button" tabindex="0">LOGIN</span>`;
+      }
+      hideAuthMsg();
+      authEmail.value = '';
+      authPassword.value = '';
+      authName.value = '';
+      authPhone.value = '';
+      authAgentEmail.value = '';
+      phoneCountryCode.value = '+92';
+      updatePhonePlaceholder();
+    }
+
+    async function handleAuth() {
+      hideAuthMsg();
+      const email = authEmail.value.trim().toLowerCase();
+      const password = authPassword.value.trim();
+      const phone = authPhone.value.trim();
+      const countryCode = phoneCountryCode.value;
+      const fullPhone = countryCode + phone;
+      const agentEmail = authAgentEmail.value.trim().toLowerCase();
+
+      if (!email || !password) {
+        showAuthMsg('Please fill in email and password.', 'error');
+        return;
+      }
+
+      authBtn.disabled = true;
+      try {
+        if (STATE.isLogin) {
+          const user = STATE.users.find(u => String(u.email).trim().toLowerCase() === email && u.password === password);
+          if (!user) {
+            showAuthMsg('Invalid email or password.', 'error');
+            return;
+          }
+          const loginAgentEmail = String(user.agentEmail || '').trim().toLowerCase();
+          if (!loginAgentEmail || !(await verifyAgentEmailOnServer(loginAgentEmail))) {
+            showAuthMsg('Agent Email is not approved.', 'error');
+            return;
+          }
+          saveSession(user);
+          showToast('Welcome back, ' + user.name + '!', 'success');
+          enterDashboard(user);
+        } else {
+        const name = authName.value.trim();
+        if (!name) { showAuthMsg('Full name is required.', 'error'); return; }
+        if (!phone) { showAuthMsg('Phone number is required.', 'error'); return; }
+        if (!agentEmail) { showAuthMsg('Agent Email is required.', 'error'); return; }
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(agentEmail)) {
+          showAuthMsg('Please enter a valid Agent Email.', 'error');
+          return;
+        }
+        if (STATE.users.find(u => String(u.email).trim().toLowerCase() === email)) {
+          showAuthMsg('Email already registered. Please LOGIN.', 'error');
+          return;
+        }
+        const approved = await verifyAgentEmailOnServer(agentEmail);
+        if (!approved) {
+          showAuthMsg('Agent Email is not approved.', 'error');
+          return;
+        }
+        const newUser = { name, email, phone: fullPhone, agentEmail, password, createdAt: Date.now() };
+        STATE.users.push(newUser);
+        saveUsers();
+        showToast('Account created successfully. Please LOGIN.', 'success');
+        authEmail.value = '';
+        renderAuth('login');
+      }
+    }
+
+    async function enterDashboard(user) {
+      authScreen.style.display = 'none';
+      dashboard.style.display = 'flex';
+      dashUserName.innerHTML = user.name + ' <i class="fas fa-bolt"></i>';
+      
+      await fetchServices();
+      await fetchMyNumbers();
+      await fetchMyOTPs(30);
+      await fetchStats();
+      
+      if (STATE.refreshInterval) clearInterval(STATE.refreshInterval);
+      STATE.refreshInterval = setInterval(async () => {
+        await fetchMyOTPs(20);
+        await fetchStats();
+        if (STATE.activeNumber) {
+          await fetchLatestOTP(STATE.activeNumber);
+        }
+      }, 8000);
+    }
+
+    function logout() {
+      clearSession();
+      if (STATE.refreshInterval) clearInterval(STATE.refreshInterval);
+      if (STATE.otpCheckInterval) clearInterval(STATE.otpCheckInterval);
+      sessionStorage.removeItem('activeNumber');
+      dashboard.style.display = 'none';
+      authScreen.style.display = 'flex';
+      renderAuth('login');
+      showToast('Logged out.', 'info');
+      navItems.forEach(item => item.classList.remove('active'));
+      document.querySelector('.nav-item[data-view="home"]').classList.add('active');
+      closeMenu();
+      closeCategory();
+    }
+
+    // ── MENU ──
+    function toggleMenu() { dropdownMenu.classList.toggle('open'); }
+    function closeMenu() { dropdownMenu.classList.remove('open'); }
+
+    // ── NAVIGATION ──
+    function navigateTo(view) {
+      navItems.forEach(item => item.classList.toggle('active', item.dataset.view === view));
+      if (view === 'logout') logout();
+      else if (view === 'refresh') {
+        fetchMyOTPs(20);
+        fetchStats();
+        showToast('🔄 Refreshed OTPs', 'info');
+      } else if (view === 'getnumber') {
+        openCategory();
+      }
+    }
+
+    // ── CATEGORY ──
+    function openCategory() {
+      if (STATE.services.length === 0) {
+        categoryGrid.innerHTML = `<div style="text-align:center;color:var(--text-muted);padding:20px;grid-column:1/-1;">Loading services...</div>`;
+        fetchServices().then(() => renderServices());
+      }
+      categoryOverlay.classList.add('active');
+      closeMenu();
+    }
+    function closeCategory() { categoryOverlay.classList.remove('active'); }
+
+    // ── MENU ACTIONS ──
+    async function handleMenuAction(action) {
+      closeMenu();
+      if (action === 'refresh') {
+        await fetchMyOTPs(20);
+        await fetchStats();
+        showToast('🔄 Refreshed OTPs', 'info');
+      } else if (action === 'numbergenerator' || action === 'getnumber') {
+        openCategory();
+      } else if (action === 'mynumbers') {
+        await fetchMyNumbers();
+        showToast(`📋 ${STATE.myNumbers.length} numbers available`, 'info');
+      } else if (action === 'system') {
+        showToast('🖥️ System Online · Connected', 'info');
+      } else if (action === 'logout') {
+        logout();
+      }
+    }
+
+    // ── CATEGORY SELECTION ──
+    function handleCategorySelection(service) {
+      STATE.selectedService = service;
+      sessionStorage.setItem('selectedService', service);
+
+      closeCategory();
+      showToast(`📱 ${service} selected — choose a country`, 'info');
+      openCountryCategories(service);
+    }
+
+    async function generateSelectedNumber() {
+      const service = STATE.selectedService || sessionStorage.getItem('selectedService');
+      const country = STATE.selectedCountry || sessionStorage.getItem('selectedCountry');
+
+      if (!service) {
+        showToast('Please select a service first', 'error');
+        return;
+      }
+
+      if (!country) {
+        showToast('Please select a country first', 'error');
+        return;
+      }
+
+      const flag = getCountryFlag(country);
+      generateNumberBtn.disabled = true;
+      generateNumberBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
+
+      try {
+        showToast(`${flag} Requesting real-time ${service} number for ${country}...`, 'info');
+        const res = await requestNumber(service, country);
+
+        if (res && res.success && res.number) {
+          selectedCountry.innerHTML =
+            `${flag} ${country} · <span style="color:var(--accent-green);">Number generated ✓</span>`;
+          showToast(`${flag} ${res.number} is now active`, 'success');
+          closeCountryCategories();
+        }
+      } finally {
+        generateNumberBtn.disabled = false;
+        generateNumberBtn.innerHTML = '<i class="fas fa-wand-magic-sparkles"></i> Generate Number';
+      }
+    }
+
+    // ── COPY / RELEASE ──
+    function copyNumber() {
+      if (!STATE.activeNumber) { showToast('No number to copy', 'error'); return; }
+      navigator.clipboard.writeText(STATE.activeNumber).then(() => {
+        showToast('📋 Number copied!', 'success');
+      }).catch(() => {
+        const input = document.createElement('input');
+        input.value = STATE.activeNumber;
+        document.body.appendChild(input);
+        input.select();
+        document.execCommand('copy');
+        document.body.removeChild(input);
+        showToast('📋 Number copied!', 'success');
+      });
+    }
+
+    async function releaseActiveNumber() {
+      if (!STATE.activeNumber) { showToast('No number to release', 'error'); return; }
+      if (!confirm(`Release number ${STATE.activeNumber}?`)) return;
+      await releaseNumber(STATE.activeNumber);
+    }
+
+    // ── EVENT BINDINGS ──
+    phoneCountryCode.addEventListener('change', updatePhonePlaceholder);
+
+    const waLink = getWhatsAppLink();
+    supportBtnAuth.href = waLink;
+
+    authBtn.type = 'button';
+    authBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      handleAuth();
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && authScreen.style.display !== 'none') {
+        e.preventDefault();
+        handleAuth();
+      }
+    });
+
+    // Reliable English LOGIN / SIGN UP toggle.
+    document.addEventListener('click', (e) => {
+      const link = e.target.closest('#toggleAuthLink');
+      if (!link) return;
+      e.preventDefault();
+      e.stopPropagation();
+      renderAuth(STATE.isLogin ? 'signup' : 'login');
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if ((e.key === 'Enter' || e.key === ' ') && e.target.closest('#toggleAuthLink')) {
+        e.preventDefault();
+        e.stopPropagation();
+        renderAuth(STATE.isLogin ? 'signup' : 'login');
+      }
+    });
+
+    menuDots.addEventListener('click', (e) => { e.stopPropagation(); toggleMenu(); });
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.left')) closeMenu();
+    });
+
+    menuItems.forEach(item => {
+      item.addEventListener('click', () => {
+        const action = item.dataset.action;
+        if (action) handleMenuAction(action);
+      });
+    });
+
+    logoutBtn.addEventListener('click', logout);
+
+    navItems.forEach(item => {
+      item.addEventListener('click', () => navigateTo(item.dataset.view));
+    });
+
+    categoryClose.addEventListener('click', closeCategory);
+    categoryOverlay.addEventListener('click', (e) => {
+      if (e.target === categoryOverlay) closeCategory();
+    });
+
+    copyNumberBtn.addEventListener('click', copyNumber);
+    releaseNumberBtn.addEventListener('click', releaseActiveNumber);
+
+
+    countryClose.addEventListener('click', closeCountryCategories);
+    countryOverlay.addEventListener('click', (e) => {
+      if (e.target === countryOverlay) closeCountryCategories();
+    });
+    countrySearch.addEventListener('input', () => {
+      const q = countrySearch.value.trim().toLowerCase();
+      renderCountries(LIVE_COUNTRIES.filter(item => item.name.toLowerCase().includes(q)));
+    });
+
+
+    generateNumberBtn.addEventListener('click', generateSelectedNumber);
+
+    if (dashboardNumberGenerator) {
+      dashboardNumberGenerator.addEventListener('click', () => {
+        openCategory();
+      });
+    }
+
+    // ── INIT ──
+    function init() {
+      // Seed admin user if not exists
+      if (!STATE.users.find(u => u.email === ADMIN_EMAIL)) {
+        STATE.users.push({
+          name: 'Hussain Ali',
+          email: ADMIN_EMAIL,
+          phone: '+923124015719',
+          agentEmail: 'husedev786@gmail.com',
+          password: ADMIN_PASSWORD,
+          createdAt: Date.now()
+        });
+        saveUsers();
+      }
+      if (STATE.currentUser) {
+        const exists = STATE.users.find(u => u.email === STATE.currentUser.email);
+        if (exists) {
+          enterDashboard(exists);
+          return;
+        } else {
+          clearSession();
+        }
+      }
+      authScreen.style.display = 'flex';
+      dashboard.style.display = 'none';
+      renderAuth('login');
+      updatePhonePlaceholder();
+    }
+
+    init();
+
+    console.log('🚀 LEGAND HUSE DEV · OTP Console (PHP Proxy)');
+    console.log('🔑 Admin: ' + ADMIN_EMAIL + ' / ' + ADMIN_PASSWORD);
+    console.log('🔗 API Proxy: ' + API_PROXY);
+
+  })();
+</script>
+</body>
+</html>
